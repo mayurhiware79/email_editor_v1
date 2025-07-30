@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PixelPost - Professional Email Editor</title>
+  <script src="https://editor.unlayer.com/embed.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Light theme */
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-tertiary: #94a3b8;
+      --accent-primary: #3b82f6;
+      --accent-hover: #2563eb;
+      --border-light: #e2e8f0;
+      --border-medium: #cbd5e1;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark {
+      /* Dark theme */
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-tertiary: #94a3b8;
+      --accent-primary: #60a5fa;
+      --accent-hover: #3b82f6;
+      --border-light: #334155;
+      --border-medium: #475569;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-light);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .logo-icon {
+      font-size: 1.5rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: relative;
+      width: 48px;
+      height: 24px;
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent-primary);
+    }
+
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    body.dark .theme-toggle::after {
+      transform: translateX(24px);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.5rem 1rem;
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Container */
+    .container {
+      display: flex;
+      flex: 1;
+      gap: 1rem;
+      padding: 1rem;
+      height: calc(100vh - 80px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 1.5rem;
+      height: 100%;
+      overflow-y: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sidebar-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .control-group {
+      margin-bottom: 2rem;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-group h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-btn {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      background: transparent;
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-btn:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--accent-primary);
+      transform: translateX(2px);
+    }
+
+    .sidebar-btn:active {
+      transform: translateX(0);
+    }
+
+    .sidebar-btn .icon {
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+
+    /* Editor Container */
+    .editor-container {
+      flex: 1;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .editor-header {
+      background: var(--bg-tertiary);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .editor-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+    }
+
+    .editor-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+
+    #editor {
+      width: 100%;
+      height: calc(100% - 45px);
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 100px;
+      right: 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: var(--shadow-lg);
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      max-width: 300px;
+      font-size: 0.875rem;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      border-left: 4px solid #10b981;
+    }
+
+    .notification.error {
+      border-left: 4px solid #ef4444;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.5rem;
+      }
+      
+      .sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        order: 2;
+      }
+      
+      .editor-container {
+        height: 400px;
+        order: 1;
+      }
+      
+      .header {
+        padding: 1rem;
+      }
+      
+      .header-actions {
+        gap: 0.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .btn span {
+        display: none;
+      }
+      
+      .btn {
+        padding: 0.5rem;
+        min-width: 40px;
+        justify-content: center;
+      }
+      
+      .logo-text {
+        display: none;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-tertiary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">📧</div>
+      <span class="logo-text">PixelPost</span>
+    </div>
+    <div class="header-actions">
+      <div class="theme-toggle" onclick="toggleTheme()"></div>
+      <button class="btn" onclick="saveDesign()">
+        💾 <span>Save</span>
+      </button>
+      <button class="btn" onclick="exportHtml()">
+        📤 <span>Export</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h2 class="sidebar-title">Editor Controls</h2>
+      
+      <div class="control-group">
+        <h4>Templates</h4>
+        <button class="sidebar-btn" onclick="loadSample()">
+          <span class="icon">🧪</span>
+          <span>Load Sample</span>
+        </button>
+        <button class="sidebar-btn" onclick="clearDesign()">
+          <span class="icon">🗑️</span>
+          <span>Clear Design</span>
+        </button>
+      </div>
+
+      <div class="control-group">
+        <h4>Actions</h4>
+        <button class="sidebar-btn" onclick="getHtml()">
+          <span class="icon">🔍</span>
+          <span>Preview HTML</span>
+        </button>
+        <button class="sidebar-btn" onclick="duplicateDesign()">
+          <span class="icon">📋</span>
+          <span>Duplicate</span>
+        </button>
+      </div>
+
+      <div class="control-group">
+        <h4>Import/Export</h4>
+        <button class="sidebar-btn" onclick="importDesign()">
+          <span class="icon">📥</span>
+          <span>Import JSON</span>
+        </button>
+        <button class="sidebar-btn" onclick="exportDesign()">
+          <span class="icon">📦</span>
+          <span>Export JSON</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="editor-container">
+      <div class="editor-header">
+        <div class="editor-title">Email Designer</div>
+        <div class="editor-status">
+          <div class="status-dot"></div>
+          <span>Ready</span>
+        </div>
+      </div>
+      <div id="editor"></div>
+    </main>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <script>
+    // Simple theme toggle
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      showNotification(`Switched to ${isDark ? 'dark' : 'light'} theme`);
+    }
+
+    // Clean notification system
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type} show`;
+      setTimeout(() => notification.classList.remove('show'), 3000);
+    }
+
+    // Initialize Unlayer - Simple and clean
+    unlayer.init({
+      id: 'editor',
+      displayMode: 'email'
+    });
+
+    // Core functions
+    function saveDesign() {
+      unlayer.saveDesign(function (design) {
+        localStorage.setItem('emailDesign', JSON.stringify(design));
+        showNotification('Design saved successfully');
+      });
+    }
+
+    function exportHtml() {
+      unlayer.exportHtml(function (data) {
+        const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
+        const blob = new Blob([data.html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `email-template-${timestamp}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showNotification('HTML exported successfully');
+      });
+    }
+
+    function loadSample() {
+      const sample = {
+        body: {
+          rows: [{
+            columns: [{
+              contents: [{
+                type: 'text',
+                values: {
+                  text: '<div style="text-align: center; padding: 40px; font-family: Arial, sans-serif;"><h1 style="color: #3b82f6; font-size: 2rem; margin-bottom: 20px;">Welcome to PixelPost</h1><p style="color: #64748b; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px;">Create professional email templates with our intuitive drag-and-drop editor. Start building beautiful emails that engage your audience.</p><a href="#" style="background: #3b82f6; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">Get Started</a></div>'
+                }
+              }]
+            }]
+          }]
+        }
+      };
+      unlayer.loadDesign(sample);
+      showNotification('Sample template loaded');
+    }
+
+    function clearDesign() {
+      if (confirm('Are you sure you want to clear the current design?')) {
+        unlayer.loadDesign({});
+        showNotification('Design cleared');
+      }
+    }
+
+    function getHtml() {
+      unlayer.exportHtml(data => {
+        const win = window.open('', '_blank');
+        win.document.write(data.html);
+        win.document.close();
+        showNotification('Preview opened in new tab');
+      });
+    }
+
+    function duplicateDesign() {
+      unlayer.saveDesign(function (design) {
+        const duplicated = JSON.parse(JSON.stringify(design));
+        setTimeout(() => {
+          unlayer.loadDesign(duplicated);
+          showNotification('Design duplicated');
+        }, 500);
+      });
+    }
+
+    function importDesign() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            try {
+              const design = JSON.parse(e.target.result);
+              unlayer.loadDesign(design);
+              showNotification('Design imported successfully');
+            } catch (error) {
+              showNotification('Invalid design file', 'error');
+            }
+          };
+          reader.readAsText(file);
+        }
+      };
+      input.click();
+    }
+
+    function exportDesign() {
+      unlayer.saveDesign(function (design) {
+        const timestamp = new Date().toISOString().slice(0,19).replace(/:/g, '-');
+        const blob = new Blob([JSON.stringify(design, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `email-design-${timestamp}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showNotification('Design exported as JSON');
+      });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load saved theme
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+      }
+
+      // Load saved design
+      const saved = localStorage.getItem('emailDesign');
+      if (saved) {
+        setTimeout(() => {
+          unlayer.loadDesign(JSON.parse(saved));
+          showNotification('Previous design restored');
+        }, 1000);
+      }
+
+      // Auto-save every 30 seconds
+      setInterval(() => {
+        unlayer.saveDesign(function (design) {
+          localStorage.setItem('emailDesign', JSON.stringify(design));
+        });
+      }, 30000);
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey || e.metaKey) {
+        switch(e.key.toLowerCase()) {
+          case 's':
+            e.preventDefault();
+            saveDesign();
+            break;
+          case 'e':
+            e.preventDefault();
+            exportHtml();
+            break;
+          case 'n':
+            e.preventDefault();
+            clearDesign();
+            break;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
